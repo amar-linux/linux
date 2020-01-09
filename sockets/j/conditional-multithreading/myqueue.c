@@ -27,7 +27,7 @@ int* dequeue (){
 		return NULL;
 	}else{
 		int *result =head->client_socket;
-		node_t *temp=head;
+		node_t *temp = head;
 		head = head->next;
 		if (head == NULL) {tail = NULL;}
 		free(temp);

@@ -25,6 +25,7 @@
 
 pthread_t thread_pool[THREAD_POOL_SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 
 typedef struct sockaddr_in SA_IN;
 typedef struct sockaddr SA;
@@ -74,6 +75,7 @@ int main(int argc, char **argv){
        int *p_client_socket = malloc(sizeof(int));
        *p_client_socket = client_socket;
        enqueue(p_client_socket);
+       pthread_cond_signal(&condition_var); 
     }// while
     return 0;
 
@@ -143,11 +145,18 @@ void* handle_connection(void* p_client_socket){
 
 
 void* thread_function(void* args){
-
+// we pass in mutex to the condition variable because , when thread is suspended it releases the lock. 
 
 	while(true){
+		int *pclient;
 		pthread_mutex_lock(&mutex);
-		int *pclient = dequeue();
+		if ((pclient = dequeue()) == NULL)
+		{
+		pthread_cond_wait(&condition_var,&mutex);   // thread releases the lock when it is suspended.
+
+		  //try againg once more 
+		pclient = dequeue();
+		}
 		pthread_mutex_unlock(&mutex);
 		if (pclient != NULL){
 			//we have a connection to work

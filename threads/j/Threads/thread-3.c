@@ -14,9 +14,9 @@ void* count_to_big(void* arg){
 
     int i;
     for (i =0; i<BIG; i++){
-        pthread_mutex_lock(&lock);
+//        pthread_mutex_lock(&lock);
         count++;       // thie is the critical section which needs to be protected and hence the lock.
-        pthread_mutex_unlock(&lock);
+  //      pthread_mutex_unlock(&lock);
     }
     return NULL;
 }
